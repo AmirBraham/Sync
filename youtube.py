@@ -4,7 +4,6 @@ from google.oauth2 import credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 import googleapiclient.discovery
 from google.auth.transport.requests import Request
-import json
 
 
 def credentialsHandling(scopes):
@@ -47,7 +46,6 @@ def main():
     response = request.execute()
     playlists = [{"id": item["id"], "title": item["snippet"]["title"]}
                  for item in response["items"] if "#sync" in item["snippet"]["description"]]
-    print(playlists)
     for playlist in playlists:
         next_page_token = None
         songs = []
@@ -64,8 +62,6 @@ def main():
             next_page_token = response.get('nextPageToken')
             if next_page_token is None:
                 break
-
-        print(songs)
 
 
 if __name__ == "__main__":

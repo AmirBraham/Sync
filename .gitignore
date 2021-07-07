@@ -465,3 +465,4 @@ junit/
 
 client_secret.json
 token.pickle
+spotify_client_secret.json
