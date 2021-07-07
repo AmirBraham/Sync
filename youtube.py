@@ -4,6 +4,7 @@ from google.oauth2 import credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 import googleapiclient.discovery
 from google.auth.transport.requests import Request
+import json
 
 
 def credentialsHandling(scopes):
@@ -44,8 +45,27 @@ def main():
         mine=True
     )
     response = request.execute()
+    playlists = [{"id": item["id"], "title": item["snippet"]["title"]}
+                 for item in response["items"] if "#sync" in item["snippet"]["description"]]
+    print(playlists)
+    for playlist in playlists:
+        next_page_token = None
+        songs = []
+        while 1:
+            request = youtube.playlistItems().list(
+                part="snippet,contentDetails",
+                playlistId=playlist["id"],
+                maxResults=50,
+                pageToken=next_page_token
+            )
+            response = request.execute()
+            songs += [{"id": item["id"], "title": item["snippet"]["title"]}
+                      for item in response['items']]
+            next_page_token = response.get('nextPageToken')
+            if next_page_token is None:
+                break
 
-    print(response)
+        print(songs)
 
 
 if __name__ == "__main__":
