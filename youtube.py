@@ -65,7 +65,7 @@ def fetchYoutubePlaylistSongs(youtube, youtube_id):
             pageToken=next_page_token
         )
         response = request.execute()
-        youtube_songs += [{"id": item["id"], "title": item["snippet"]["title"]}
+        youtube_songs += [{"id": item["snippet"]["resourceId"]["videoId"], "title": item["snippet"]["title"]}
                           for item in response['items']]
         next_page_token = response.get('nextPageToken')
         if next_page_token is None:
