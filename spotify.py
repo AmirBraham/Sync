@@ -2,7 +2,6 @@ from helper import dumpToJson
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import json
-import argparse
 
 spotify_client_secret = open("spotify_client_secret.json")
 
@@ -13,6 +12,7 @@ scope = ["playlist-read-private",
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=SPOTIPY_CLIENT_ID,
                      client_secret=SPOTIPY_CLIENT_SECRET, redirect_uri=SPOTIPY_REDIRECT_URI))
+
 ''' 
 res = sp.current_user_playlists()
 search_res = sp.search(q="mxmtoon - blame game", type="track")
