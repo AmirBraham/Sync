@@ -1,6 +1,5 @@
 import os
 import pickle
-from queries import fetchSongs
 from playlist import Playlist
 from google.oauth2 import credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -35,7 +34,7 @@ def credentialsHandling(scopes):
 
 
 def youtubeAuthentication():
-    scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
+    scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
     credentials = credentialsHandling(scopes)
     youtube = googleapiclient.discovery.build(
         "youtube", "v3", credentials=credentials)
@@ -71,6 +70,32 @@ def fetchYoutubePlaylistSongs(youtube, youtube_id):
         if next_page_token is None:
             break
     return youtube_songs
+
+
+def searchSongOnYoutube(youtube, track_name):
+    request = youtube.search().list(
+        part="snippet",
+        q=track_name
+    )
+    response = request.execute()
+    print(response["items"])
+    songId = response["items"][0]["id"]["videoId"]
+    return songId
+
+
+def addSongToYoutubePlaylist(youtube, youtube_playlist_id, youtube_song_id):
+    youtube.playlistItems().insert(
+        part="snippet",
+        body={
+            'snippet': {
+                'playlistId': youtube_playlist_id,
+                'resourceId': {
+                    'kind': 'youtube#video',
+                    'videoId': youtube_song_id
+                }
+            }
+        }
+    ).execute()
 
 
 def main():
