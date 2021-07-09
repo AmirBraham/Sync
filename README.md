@@ -1,6 +1,10 @@
 # Sync
 Syncing Youtube and Spotify playlists
 
-todo
-detect song deletion from spotify or youtube playlist 
-if entry has youtube_id in playlist but youtube_playlist does not contain an entry with that id => delete that entry / same logic for spotify
+bugs and improvements:
+- sometimes script need to be executed twice to detect changes
+- deletion sometimes fails
+- upload to heroku and execute every hour
+- better youtube title cleanup for easier spotify search
+- batch search and add songs to playlists
+
