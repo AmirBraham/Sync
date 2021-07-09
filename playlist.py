@@ -16,3 +16,7 @@ class Playlist(Base):
         self.title = title
         self.spotify_id = spotify_id
         self.youtube_id = youtube_id
+
+    def __str__(self):
+        super().__str__()
+        return "title : {} , spotify_id: {}, youtube_id:{},playlist_id:{}".format(self.title, self.spotify_id, self.youtube_id, self.id)

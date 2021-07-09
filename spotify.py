@@ -1,4 +1,4 @@
-from helper import dumpToJson
+from helper import dumpToJson, titleCleanup
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import json
@@ -30,22 +30,21 @@ def fetchSpotifyPlaylistSongs(sp, spotify_id):
     while True:
         response = sp.playlist_items(pl_id,
                                      offset=offset,
-                                     fields='items.track.id,total,items.track.name',
+                                     fields='items.track.id,total,items.track.name,items.track.artists',
                                      additional_types=['track'])
         res += response['items']
 
         if len(response['items']) == 0:
             break
         offset = offset + len(response['items'])
-    songs = [{"id": item["track"]["id"], "title": item["track"]["name"]}
+    songs = [{"id": item["track"]["id"], "title": item["track"]["artists"][0]["name"] + " " + item["track"]["name"]}
              for item in res]
     return songs
 
 
 def searchSongOnSpotify(sp, track_name):
-    print("searching song on spotify", track_name)
     try:
-        result = sp.search(track_name)
+        result = sp.search(titleCleanup(track_name))
         return result["tracks"]["items"][0]["id"]
     except:
         return -1

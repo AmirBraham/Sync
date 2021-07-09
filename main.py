@@ -48,11 +48,15 @@ for youtube_playlist in youtube_playlists:
     # add songs from db to youtube playlist
     for song in playlist_songs:
         if song.youtube_id == None:
+            print("searchnig song on youtube ", song)
             songId = searchSongOnYoutube(
                 youtube=youtube, track_name=song.title)
-            addSongToYoutubePlaylist(
+            if(songId == -1):
+                continue
+            youtube_playlistItemId = addSongToYoutubePlaylist(
                 youtube=youtube, youtube_playlist_id=youtube_playlist["id"], youtube_song_id=songId)
             song.youtube_id = songId
+            song.youtube_playlistItemId = youtube_playlistItemId
         else:
             # checking for deletion
             SongExists = False
@@ -60,13 +64,14 @@ for youtube_playlist in youtube_playlists:
                 if(s["id"] == song.youtube_id):
                     SongExists = True
             if(not SongExists):
+                print("deleting song ", song, playlist)
                 deleteSongFromPlaylist(
-                    session=session, playlist=playlist, song=song)
+                    session=session, youtube=youtube, sp=spotify, playlist=playlist, song=song)
 
                 # add songs from youtube playlist to db
     for youtube_song in youtube_playlist_songs:
-        addSongToPlaylist(session=session, playlist=playlist,
-                          youtube_id=youtube_song["id"], track_title=youtube_song["title"])
+        addSongToPlaylist(playlist=playlist,
+                          youtube_id=youtube_song["id"], youtube_playlistItemId=youtube_song["youtube_playlistItemId"], track_title=youtube_song["title"])
     session.commit()
 
 for spotify_playlist in spotify_playlists:
@@ -78,9 +83,10 @@ for spotify_playlist in spotify_playlists:
     # add songs from db to spotify playlist
     for song in playlist_songs:
         if song.spotify_id == None:
-            print("adding to spotify playlist ", song.title, spotify_playlist)
             songId = searchSongOnSpotify(
                 sp=spotify, track_name=song.title)
+            print("adding to spotify playlist ",
+                  song.title, spotify_playlist, songId)
             if(songId == -1):
                 continue
             addSongToSpotifyPlaylist(
@@ -93,11 +99,12 @@ for spotify_playlist in spotify_playlists:
                 if(s["id"] == song.spotify_id):
                     SongExists = True
             if(not SongExists):
+                print("deleting song ", song, playlist)
                 deleteSongFromPlaylist(
-                    session=session, playlist=playlist, song=song)
+                    session=session, youtube=youtube, sp=spotify, playlist=playlist, song=song)
     # add songs from spotify playlist to db
     for spotify_song in spotify_playlist_songs:
-        addSongToPlaylist(session=session, playlist=playlist,
+        addSongToPlaylist(playlist=playlist,
                           spotify_id=spotify_song["id"], track_title=spotify_song["title"])
     session.commit()
 session.close()

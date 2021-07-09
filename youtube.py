@@ -1,3 +1,4 @@
+from helper import titleCleanup
 import os
 import pickle
 from playlist import Playlist
@@ -64,7 +65,7 @@ def fetchYoutubePlaylistSongs(youtube, youtube_id):
             pageToken=next_page_token
         )
         response = request.execute()
-        youtube_songs += [{"id": item["snippet"]["resourceId"]["videoId"], "title": item["snippet"]["title"]}
+        youtube_songs += [{"id": item["snippet"]["resourceId"]["videoId"], "title": item["snippet"]["title"], "youtube_playlistItemId":item["id"]}
                           for item in response['items']]
         next_page_token = response.get('nextPageToken')
         if next_page_token is None:
@@ -73,28 +74,33 @@ def fetchYoutubePlaylistSongs(youtube, youtube_id):
 
 
 def searchSongOnYoutube(youtube, track_name):
-    request = youtube.search().list(
-        part="snippet",
-        q=track_name
-    )
-    response = request.execute()
-    songId = response["items"][0]["id"]["videoId"]
-    return songId
+    try:
+        request = youtube.search().list(
+            part="snippet",
+            q=titleCleanup(track_name)
+        )
+        response = request.execute()
+        songId = response["items"][0]["id"]["videoId"]
+        return songId
+    except:
+        return -1
 
 
 def addSongToYoutubePlaylist(youtube, youtube_playlist_id, youtube_song_id):
-    youtube.playlistItems().insert(
+    request = youtube.playlistItems().insert(
         part="snippet",
         body={
-            'snippet': {
-                'playlistId': youtube_playlist_id,
-                'resourceId': {
-                    'kind': 'youtube#video',
-                    'videoId': youtube_song_id
-                }
-            }
+             'snippet': {
+                 'playlistId': youtube_playlist_id,
+                 'resourceId': {
+                     'kind': 'youtube#video',
+                     'videoId': youtube_song_id
+                 }
+             }
         }
-    ).execute()
+    )
+    response = request.execute()
+    return response["id"]
 
 
 def createYoutubePlaylist(youtube, playlist_title):
