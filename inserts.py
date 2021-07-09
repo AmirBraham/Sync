@@ -1,3 +1,4 @@
+from sqlalchemy.sql.expression import and_
 from playlist import Playlist
 from song import Song
 
@@ -17,3 +18,8 @@ def addSongToPlaylist(session, playlist: Playlist, track_title, spotify_id=None,
             songExists = True
     if(not songExists):
         playlist.songs.append(song)
+
+
+def deleteSongFromPlaylist(session, playlist: Playlist, song):
+    session.query(Song).filter(
+        and_(Song.id == song.id, Song.playlist_id == playlist.id)).delete()

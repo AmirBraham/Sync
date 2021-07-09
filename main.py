@@ -1,4 +1,4 @@
-from inserts import addSongToPlaylist
+from inserts import addSongToPlaylist, deleteSongFromPlaylist
 from queries import fetchPlaylist
 from youtube import addSongToYoutubePlaylist, fetchYoutubePlaylistSongs, fetchYoutubePlaylists, searchSongOnYoutube, youtubeAuthentication
 from base import Base, engine, Session
@@ -25,7 +25,17 @@ for youtube_playlist in youtube_playlists:
             addSongToYoutubePlaylist(
                 youtube=youtube, youtube_playlist_id=youtube_playlist["id"], youtube_song_id=songId)
             song.youtube_id = songId
-    # add songs from youtube playlist to db
+        else:
+            # checking for deletion
+            SongExists = False
+            for s in youtube_playlist_songs:
+                if(s["id"] == song.youtube_id):
+                    SongExists = True
+            if(not SongExists):
+                deleteSongFromPlaylist(
+                    session=session, playlist=playlist, song=song)
+
+                # add songs from youtube playlist to db
     for youtube_song in youtube_playlist_songs:
         addSongToPlaylist(session=session, playlist=playlist,
                           youtube_id=youtube_song["id"], track_title=youtube_song["title"])
