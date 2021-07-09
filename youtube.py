@@ -78,7 +78,6 @@ def searchSongOnYoutube(youtube, track_name):
         q=track_name
     )
     response = request.execute()
-    print(response["items"])
     songId = response["items"][0]["id"]["videoId"]
     return songId
 
@@ -98,14 +97,21 @@ def addSongToYoutubePlaylist(youtube, youtube_playlist_id, youtube_song_id):
     ).execute()
 
 
+def createYoutubePlaylist(youtube, playlist_title):
+    playlist = youtube.playlists().insert(
+        part="snippet",
+        body={
+            'snippet': {
+                "title": playlist_title,
+                "description": "#sync"
+            }
+        }
+    ).execute()
+    return playlist
+
+
 def main():
     pass
-    """  for playlist in playlists:
-        playlist = Playlist(playlist["title"],
-                            youtube_id=playlist["youtube_id"])
-        fetchPlaylist(youtube_id=playlist["youtube_id"])
-
-        print(fetchSongs(youtube_playlist_id=playlist.youtube_id)) """
 
 
 if __name__ == "__main__":

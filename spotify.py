@@ -37,26 +37,26 @@ def fetchSpotifyPlaylistSongs(sp, spotify_id):
         if len(response['items']) == 0:
             break
         offset = offset + len(response['items'])
-        print(offset, "/", response['total'])
-    print(res)
     songs = [{"id": item["track"]["id"], "title": item["track"]["name"]}
              for item in res]
-    print(songs)
     return songs
 
 
 def searchSongOnSpotify(sp, track_name):
-    result = sp.search(track_name)
-    return result["tracks"]["items"][0]["id"]
+    print("searching song on spotify", track_name)
+    try:
+        result = sp.search(track_name)
+        return result["tracks"]["items"][0]["id"]
+    except:
+        return -1
 
 
 def addSongToSpotifyPlaylist(sp, spotify_playlist_id, spotify_song_id):
-    sp.playlist_add_items(spotify_playlist_id, spotify_song_id)
+    sp.playlist_add_items(spotify_playlist_id, [spotify_song_id])
 
 
-''' 
-res = sp.current_user_playlists()
-search_res = sp.search(q="mxmtoon - blame game", type="track")
-track_id = search_res["tracks"]["items"][0]["id"]
-sp.playlist_add_items("69D8RPFzuIorGGpFBBFFwC", [track_id])
- '''
+def createSpotifyPlaylist(sp, playlist_title):
+    user_id = sp.me()['id']
+    playlist = sp.user_playlist_create(
+        user_id, playlist_title, description="#sync")
+    return playlist
