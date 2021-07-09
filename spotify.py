@@ -43,6 +43,7 @@ def fetchSpotifyPlaylistSongs(sp, spotify_id):
 
 
 def searchSongOnSpotify(sp, track_name):
+    print("searching ,", titleCleanup(track_name), "on spotify ")
     try:
         result = sp.search(titleCleanup(track_name))
         return result["tracks"]["items"][0]["id"]

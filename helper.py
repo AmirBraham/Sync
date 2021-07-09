@@ -9,12 +9,17 @@ def dumpToJson(name, dic):
 
 
 def titleCleanup(title):
-    STOPWORDS = ['(audio)', "(official", "video)",
-                 "(Lyric", " Video)",
-                 'audio)', '(video)', '-', 'Lyric', "(", ")", "//", "ft.", "(Explicit)"]
-    query = title
-    querywords = query.split()
-    resultwords = [word for word in querywords if word.lower()
-                   not in STOPWORDS]
-    result = re.sub(' +', ' ', ' '.join(resultwords))
+    STOPWORDS = ["audio", "official", "video",
+                 "lyrics",
+                 "lyric",
+                 "()",
+                 "[",
+                 "]",
+                 "Visualizer",
+
+                 ")",  ")", "()", "-", "(", ")", "//", "ft.", "(Explicit)"]
+    query = title.lower()
+    for word in STOPWORDS:
+        query = query.replace(word, "")
+    result = re.sub(" +", " ", query)
     return result

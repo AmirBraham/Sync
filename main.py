@@ -85,8 +85,7 @@ for spotify_playlist in spotify_playlists:
         if song.spotify_id == None:
             songId = searchSongOnSpotify(
                 sp=spotify, track_name=song.title)
-            print("adding to spotify playlist ",
-                  song.title, spotify_playlist, songId)
+
             if(songId == -1):
                 continue
             addSongToSpotifyPlaylist(
