@@ -35,8 +35,6 @@ for spotify_playlist in spotify_playlists:
         playlist.youtube_id = youtube_playlist["id"]
     session.commit()
 
-youtube_playlists = fetchYoutubePlaylists(youtube)
-spotify_playlists = fetchSpotifyPlaylists(spotify)
 
 for youtube_playlist in youtube_playlists:
     playlist = fetchPlaylist(session=session,
@@ -64,7 +62,6 @@ for youtube_playlist in youtube_playlists:
                 if(s["id"] == song.youtube_id):
                     SongExists = True
             if(not SongExists):
-                print("deleting song ", song, playlist)
                 deleteSongFromPlaylist(
                     session=session, youtube=youtube, sp=spotify, playlist=playlist, song=song)
 
@@ -85,8 +82,8 @@ for spotify_playlist in spotify_playlists:
         if song.spotify_id == None:
             songId = searchSongOnSpotify(
                 sp=spotify, track_name=song.title)
-
             if(songId == -1):
+                print("could not find ", song.title, " on spotify")
                 continue
             addSongToSpotifyPlaylist(
                 sp=spotify, spotify_playlist_id=spotify_playlist["id"], spotify_song_id=songId)

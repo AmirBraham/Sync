@@ -24,10 +24,11 @@ def addSongToPlaylist(playlist: Playlist, track_title, spotify_id=None, youtube_
 
 def deleteSongFromPlaylist(session, youtube, sp, playlist: Playlist, song: Song, youtube_playlistItemId=None):
     try:
-        if(youtube_playlistItemId != None):
+        if(song.spotify_id != None):
             sp.playlist_remove_all_occurrences_of_items(
-                playlist.spotify_id, song.spotify_id)
+                playlist.spotify_id, [song.spotify_id])
         if(youtube_playlistItemId != None):
+            print("deleting ", song, " from youtube playlist")
             youtube.playlistItems().delete(
                 id=youtube_playlistItemId
             ).execute()

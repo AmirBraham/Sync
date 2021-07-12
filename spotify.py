@@ -2,6 +2,7 @@ from helper import dumpToJson, titleCleanup
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import json
+from fuzzywuzzy import fuzz
 
 
 def spotifyAuthentication():
@@ -46,7 +47,19 @@ def searchSongOnSpotify(sp, track_name):
     print("searching ,", titleCleanup(track_name), "on spotify ")
     try:
         result = sp.search(titleCleanup(track_name))
-        return result["tracks"]["items"][0]["id"]
+        topSongId = -1
+        topSongRatio = 0
+        for song in result["tracks"]["items"]:
+            song_id = song["id"]
+            song_name = song["name"]
+            r = fuzz.ratio(song_name.lower(), titleCleanup(track_name).lower())
+            if(r >= topSongRatio):
+                topSongId = song_id
+                topSongRatio = r
+        print("top song ratio : ", topSongRatio)
+        if(topSongRatio < 60):
+            return -1
+        return topSongId
     except:
         return -1
 
