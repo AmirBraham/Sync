@@ -57,7 +57,7 @@ def searchSongOnSpotify(sp, track_name):
                 topSongId = song_id
                 topSongRatio = r
         print("top song ratio : ", topSongRatio)
-        if(topSongRatio < 60):
+        if(topSongRatio < 50):
             return -1
         return topSongId
     except:

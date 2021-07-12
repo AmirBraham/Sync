@@ -16,7 +16,10 @@ def titleCleanup(title):
                  "[",
                  "]",
                  "Visualizer",
-
+                 "slowed",
+                 "reverb",
+                 "+",
+                 "%",
                  ")",  ")", "()", "-", "(", ")", "//", "ft.", "(Explicit)"]
     query = title.lower()
     result = re.sub("\[(.*?)\]|\((.*?)\)|ft(.*)", repl="",
