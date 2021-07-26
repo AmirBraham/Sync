@@ -13,6 +13,9 @@ youtube_playlists = fetchYoutubePlaylists(youtube)
 spotify = spotifyAuthentication()
 spotify_playlists = fetchSpotifyPlaylists(spotify)
 
+print(len(spotify_playlists))
+print(len(youtube_playlists))
+
 # create new playlists in youtube and spotify
 for youtube_playlist in youtube_playlists:
     playlist = fetchPlaylist(session=session,

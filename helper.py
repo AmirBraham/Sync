@@ -24,12 +24,14 @@ def titleCleanup(title):
     query = title.lower()
     result = re.sub("\[(.*?)\]|\((.*?)\)|ft(.*)", repl="",
                     string=query)
-
     for word in STOPWORDS:
-        query = query.replace(word, "")
-    result = re.sub(" +", " ", query)
+        result = result.replace(word, "")
+    result = re.sub(" +", " ", result)
     result = result.split(" ")
     if(result[-1].isnumeric()):
         result.pop()
     result = " ".join(map(str, result))
     return result
+
+
+print(titleCleanup("Tame Impala - Borderline (Single Version)"))
