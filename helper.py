@@ -34,4 +34,3 @@ def titleCleanup(title):
     return result
 
 
-print(titleCleanup("Tame Impala - Borderline (Single Version)"))
