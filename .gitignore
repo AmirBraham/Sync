@@ -467,3 +467,5 @@ client_secret.json
 token.pickle
 spotify_client_secret.json
 postgres.json
+
+token.json

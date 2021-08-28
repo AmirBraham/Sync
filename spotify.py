@@ -1,4 +1,4 @@
-from helper import dumpToJson, titleCleanup
+from helper import titleCleanup
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import json

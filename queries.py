@@ -1,7 +1,5 @@
 from inserts import createPlaylist
-from sqlalchemy.orm import session
 from sqlalchemy.sql.expression import and_, or_
-from song import Song
 from playlist import Playlist
 
 

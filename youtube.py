@@ -1,37 +1,30 @@
 from helper import titleCleanup
 import os
-import pickle
-from playlist import Playlist
-from google.oauth2 import credentials
+from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 import googleapiclient.discovery
 from google.auth.transport.requests import Request
 
 
 def credentialsHandling(scopes):
-    credentials = None
-    if os.path.exists('token.pickle'):
-        print('Loading Credentials From File...')
-        with open('token.pickle', 'rb') as token:
-            credentials = pickle.load(token)
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file(
+            'token.json', scopes=scopes)
 
-    if not credentials or not credentials.valid:
-        if credentials and credentials.expired and credentials.refresh_token:
-            print('Refreshing Access Token...')
-            credentials.refresh(Request())
-        else:
-            print('Fetching New Tokens...')
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "client_secret.json",
-                scopes
-            )
+    if creds and creds.expired and creds.refresh_token:
+        print("refreshing")
+        creds.refresh(Request())
+    if not creds or not creds.valid:
+        flow = InstalledAppFlow.from_client_secrets_file(
+            "client_secret.json", scopes)
+        creds = flow.run_console()
+        print("creds", creds)
+        # Save the credentials for the next run
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
 
-            credentials = flow.run_console()
-            # Save the credentials for the next run
-            with open('token.pickle', 'wb') as f:
-                print('Saving Credentials for Future Use...')
-                pickle.dump(credentials, f)
-    return credentials
+    return creds
 
 
 def youtubeAuthentication():

@@ -1,11 +1,4 @@
-import json
 import re
-
-
-def dumpToJson(name, dic):
-    f = open(name + ".json", "w")
-    json.dump(dic, f)
-    f.close()
 
 
 def titleCleanup(title):
@@ -32,5 +25,3 @@ def titleCleanup(title):
         result.pop()
     result = " ".join(map(str, result))
     return result
-
-
