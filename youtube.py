@@ -109,6 +109,22 @@ def createYoutubePlaylist(youtube, playlist_title):
     return playlist
 
 
+def searchYoutubePlaylist(youtube, playlist_title):
+    request = youtube.playlists().list(
+        part="snippet,contentDetails",
+        maxResults=25,
+        mine=True
+    )
+    response = request.execute()
+    playlist_id = False
+    for item in response["items"]:
+        if(item["snippet"]["title"] == playlist_title and "#sync" in item["snippet"]["description"]):
+            print("linking spotify and youtube playlist")
+            playlist_id = item["id"]
+
+    return playlist_id
+
+
 def main():
     pass
 

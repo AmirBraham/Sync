@@ -73,3 +73,14 @@ def createSpotifyPlaylist(sp, playlist_title):
     playlist = sp.user_playlist_create(
         user_id, playlist_title, description="#sync")
     return playlist
+
+
+def searchSpotifyPlaylist(sp, playlist_title):
+    res = sp.current_user_playlists()
+    playlist_id = False
+    for item in res["items"]:
+        if(item["name"] == playlist_title and "#sync" in item["description"]):
+            print("linking spotify and youtube playlist")
+            playlist_id = item["id"]
+
+    return playlist_id

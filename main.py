@@ -1,7 +1,7 @@
-from spotify import addSongToSpotifyPlaylist, createSpotifyPlaylist, fetchSpotifyPlaylistSongs, fetchSpotifyPlaylists, searchSongOnSpotify, spotifyAuthentication
+from spotify import addSongToSpotifyPlaylist, createSpotifyPlaylist, fetchSpotifyPlaylistSongs, fetchSpotifyPlaylists, searchSongOnSpotify, searchSpotifyPlaylist, spotifyAuthentication
 from inserts import addSongToPlaylist, deleteSongFromPlaylist
 from queries import fetchPlaylist
-from youtube import addSongToYoutubePlaylist, createYoutubePlaylist, fetchYoutubePlaylistSongs, fetchYoutubePlaylists, searchSongOnYoutube, youtubeAuthentication
+from youtube import addSongToYoutubePlaylist, createYoutubePlaylist, fetchYoutubePlaylistSongs, fetchYoutubePlaylists, searchSongOnYoutube, searchYoutubePlaylist, youtubeAuthentication
 from base import Base, engine, Session
 
 
@@ -18,22 +18,32 @@ spotify_playlists = fetchSpotifyPlaylists(spotify)
 for youtube_playlist in youtube_playlists:
     playlist = fetchPlaylist(session=session,
                              playlist_title=youtube_playlist["title"], youtube_id=youtube_playlist["id"])
-    spotify_playlist = None
+    spotify_playlist = {}
     if(playlist.spotify_id == None):
-        spotify_playlist = createSpotifyPlaylist(
-            sp=spotify, playlist_title=playlist.title)
-        playlist.spotify_id = spotify_playlist["id"]
+        spotify_playlist["id"] = searchSpotifyPlaylist(sp=spotify,
+                                                       playlist_title=youtube_playlist["title"])
+        if(spotify_playlist["id"]):
+            playlist.spotify_id = spotify_playlist["id"]
+        else:
+            spotify_playlist = createSpotifyPlaylist(
+                sp=spotify, playlist_title=playlist.title)
+            playlist.spotify_id = spotify_playlist["id"]
     session.commit()
 
 for spotify_playlist in spotify_playlists:
     playlist = fetchPlaylist(
         session=session, playlist_title=spotify_playlist["title"], spotify_id=spotify_playlist["id"])
-    youtube_playlist = None
+    youtube_playlist = {}
     if(playlist.youtube_id == None):
-        youtube_playlist = createYoutubePlaylist(
-            youtube=youtube, playlist_title=playlist.title
-        )
-        playlist.youtube_id = youtube_playlist["id"]
+        youtube_playlist["id"] = searchYoutubePlaylist(youtube=youtube,
+                                                       playlist_title=spotify_playlist["title"])
+        if(spotify_playlist["id"]):
+            playlist.youtube_id = youtube_playlist["id"]
+        else:
+            youtube_playlist = createYoutubePlaylist(
+                youtube=youtube, playlist_title=playlist.title
+            )
+            playlist.youtube_id = youtube_playlist["id"]
     session.commit()
 
 
@@ -46,11 +56,14 @@ for youtube_playlist in youtube_playlists:
 
     # add songs from db to youtube playlist
     for song in playlist_songs:
+        if(song.tried_to_sync):
+            continue
         if song.youtube_id == None:
-            print("searchnig song on youtube ", song)
             songId = searchSongOnYoutube(
                 youtube=youtube, track_name=song.title)
+            song.tried_to_sync = True
             if(songId == -1):
+
                 continue
             youtube_playlistItemId = addSongToYoutubePlaylist(
                 youtube=youtube, youtube_playlist_id=youtube_playlist["id"], youtube_song_id=songId)
@@ -66,7 +79,7 @@ for youtube_playlist in youtube_playlists:
                 deleteSongFromPlaylist(
                     session=session, youtube=youtube, sp=spotify, playlist=playlist, song=song)
 
-                # add songs from youtube playlist to db
+    # add songs from youtube playlist to db
     for youtube_song in youtube_playlist_songs:
         addSongToPlaylist(playlist=playlist,
                           youtube_id=youtube_song["id"], youtube_playlistItemId=youtube_song["youtube_playlistItemId"], track_title=youtube_song["title"])
@@ -80,9 +93,12 @@ for spotify_playlist in spotify_playlists:
         sp=spotify, spotify_id=playlist.spotify_id)
     # add songs from db to spotify playlist
     for song in playlist_songs:
+        if(song.tried_to_sync):
+            continue
         if song.spotify_id == None:
             songId = searchSongOnSpotify(
                 sp=spotify, track_name=song.title)
+            song.tried_to_sync = True
             if(songId == -1):
                 print("could not find ", song.title, " on spotify")
                 continue
